@@ -13,7 +13,7 @@ This project uses roslibpy lidar and odometry in order to map the surrounding ar
 The purpose of this project is to accompish a task for the EW458 Final. However, if further optimized, the utilization of robots to map an area could be implemented to access or observe areas that may be blocked off or dangerous for people to enter. For example, cave exploration or scouting an area. 
 As mentioned above, this project uses roslibpy in order to subscribe to the lidar and odometry sensors on the robot, and publish the resulting occupancy grid.
 
-<img src="./occupancygrid.png" alt="Screenshot" width="400"/>
+<img src="./images/occupancygrid.png" alt="Screenshot" width="400"/>
 
 A screenshot of the resulting occupancy grid is shown above. The map is designed to update over time so any changes made to its surroundings will be reflected on the map. 
 
