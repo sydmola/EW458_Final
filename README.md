@@ -5,8 +5,10 @@ This project uses roslibpy lidar and odometry in order to map the surrounding ar
 ## Table of Contents
 
 - [About](#about)
+- [Dependencies](#dependencies)
 - [Usage](#usage)
 - [Acknowledgements](#acknowledgements)
+  
 
 ## About
 
@@ -16,6 +18,19 @@ As mentioned above, this project uses roslibpy in order to subscribe to the lida
 <img src="./images/occupancygrid.png" alt="Screenshot" width="400"/>
 
 A screenshot of the resulting occupancy grid is shown above. The map is designed to update over time so any changes made to its surroundings will be reflected on the map. 
+
+## Dependencies
+
+Clone the respository
+'''bash
+git clone https://github.com/sydmola/EW458_Final
+'''bash
+install roslibpy
+'''bash
+  pip install roslibpy
+'''bash
+install numpy
+  pip install numpy
 
 
 ## Usage
