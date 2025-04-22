@@ -21,15 +21,16 @@ A screenshot of the resulting occupancy grid is shown above. The map is designed
 
 ## Dependencies
 
-Clone the respository
-'''bash
-git clone https://github.com/sydmola/EW458_Final
-'''bash
-install roslibpy
-'''bash
-  pip install roslibpy
-'''bash
-install numpy
+Clone the respository  
+
+git clone https://github.com/sydmola/EW458_Final  
+
+install roslibpy  
+
+  pip install roslibpy  
+
+install numpy  
+
   pip install numpy
 
 
