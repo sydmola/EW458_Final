@@ -45,6 +45,8 @@ Occupancy grid: A pixelated map showing a space based on lidar. If an object or 
 
 ## Usage Examples
 
+Bellow is an example of the code being used while driving a robot from one classroom into a hallway and back around clockwise to the origin in the class.
+
 <img src="./map1.gif"/>
 
 
