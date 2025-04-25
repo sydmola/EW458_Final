@@ -46,7 +46,7 @@ Occupancy grid: A pixelated map showing a space based on lidar. If an object or 
 ## Usage Examples
 
 ![mapgif](https://github.com/sydmola/EW458_Final/docs/BCF_map1.gif) 
-<img src="https://github.com/sydmola/EW458_Final/docs/BCF_map1.gif"/>
+<img src="./docs/BCF_map1.gif"/>
 
 
 ## Acknowledgements
