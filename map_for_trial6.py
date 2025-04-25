@@ -23,9 +23,10 @@ class RobotMapper:
         self.angs = []
 
         self.resolution = 0.1
-        self.width = 100
-        self.height = 100
+        self.width = 300
+        self.height = 300
         self.origin = (-self.width * self.resolution / 2, -self.height * self.resolution / 2)
+        #self.origin = (-15, 15)
 
         self.grid = np.full((self.height, self.width), -1, dtype=np.int8)
         self.odom_data = deque(maxlen=100)
@@ -56,7 +57,7 @@ class RobotMapper:
         gy = int((y - self.origin[1]) / self.resolution)
         return gx, gy
 
-    def ensure_within_bounds(self, gx, gy):
+    def ensure_within_bounds(self, gx, gy): # to expand the grid if the scan, or robot are out of bounds
         pad_top = pad_bottom = pad_left = pad_right = 0
         expand = False
 
@@ -83,7 +84,7 @@ class RobotMapper:
             )
             self.trail = [(x + pad_left, y + pad_bottom) for (x, y) in self.trail]
 
-    def _odom_callback(self, message):
+    def _odom_callback(self, message): #to extract robot's position data
         pos = message['pose']['pose']['position']
         orientation = message['pose']['pose']['orientation']
         stamp = message['header']['stamp']
@@ -91,11 +92,11 @@ class RobotMapper:
         self.odomMsgs += 1
         self.odom_data.append({
             'timestamp': timestamp,
-            'position': {'x': pos['x'], 'y': pos['y']},
+            'position': {'x': pos['x'], 'y': pos['y']}, #appending dictionaries to the list containing position data and timestamps
             'orientation': orientation
         })
 
-    def _scan_callback(self, message):
+    def _scan_callback(self, message): #to grab lidar data
         stamp = message['header']['stamp']
         timestamp = stamp['sec'] + stamp['nanosec'] * 1e-9
         angle_min = message['angle_min']
@@ -104,12 +105,12 @@ class RobotMapper:
         angles = [angle_min + i * angle_increment for i in range(len(ranges))]
         self.scanMsgs += 1
         self.scan_data.append({
-            'timestamp': timestamp,
+            'timestamp': timestamp,       #appending dictionaries to the list containing scan data and timestamps
             'ranges': ranges,
             'angles': angles
         })
-
-    def get_synchronized_messages(self, tolerance=0.02):
+    
+    def get_synchronized_messages(self, tolerance=0.02): #self explanatory. Extremely important to grab syncrhonized timestamps to plot correctly
         synchronized = []
         for odom in self.odom_data:
             for scan in self.scan_data:
@@ -117,7 +118,7 @@ class RobotMapper:
                     synchronized.append((odom, scan))
         return synchronized
 
-    def bresenham(self, x0, y0, x1, y1):
+    def bresenham(self, x0, y0, x1, y1): #this algorithim returns line of sight tracing essential for us to detect obstacles
         points = []
         dx = abs(x1 - x0)
         dy = abs(y1 - y0)
@@ -145,7 +146,7 @@ class RobotMapper:
         points.append((x1, y1))
         return points
 
-    def publish_map(self, odom, scan):
+    def publish_map(self, odom, scan): # here we 
         self.x = odom['position']['x']
         self.y = odom['position']['y']
         orientation = odom['orientation']
@@ -168,6 +169,7 @@ class RobotMapper:
             for fx, fy in self.bresenham(robot_gx, robot_gy, gx, gy)[:-1]:
                 if 0 <= fx < self.width and 0 <= fy < self.height and self.grid[fy, fx] == -1:
                     self.grid[fy, fx] = 0
+            
             if 0 <= gx < self.width and 0 <= gy < self.height and self.grid[gy, gx] != 0:
                 self.grid[gy, gx] = 100
 
@@ -186,7 +188,8 @@ class RobotMapper:
         mapped_grid[self.grid == 100] = 2
 
         plt.imshow(mapped_grid, origin='lower', cmap=cmap, vmin=0, vmax=2)
-        plt.plot(robot_gx, robot_gy, 'bo')
+        #plt.plot(robot_gx, robot_gy, 'ko')
+        plt.plot(robot_gx, robot_gy, 'ko', markersize=6, markeredgecolor='black')
         plt.arrow(robot_gx, robot_gy, 5 * math.cos(self.yaw), 5 * math.sin(self.yaw), head_width=2, fc='green')
         plt.title('Robot Occupancy Grid Map')
         plt.pause(0.01)
@@ -222,13 +225,13 @@ class RobotMapper:
         print("RobotMapper is running. Press Ctrl+C to stop.")
         try:
             while self.ros.is_connected:
-                synced = self.get_synchronized_messages()
+                synced = self.get_synchronized_messages()    #we make sure we get our sync data
                 new_pairs = [pair for pair in synced if pair[0]['timestamp'] > self.last_synced_time]
                 if new_pairs:
                     latest_odom, latest_scan = new_pairs[-1]
                     self.last_synced_time = latest_odom['timestamp']
-                    self.publish_map(latest_odom, latest_scan)
-                time.sleep(0.2)
+                    self.publish_map(latest_odom, latest_scan) #publish with synced data
+                time.sleep(5)
         except KeyboardInterrupt:
             print("Interrupted by user.")
             self.cleanup()
